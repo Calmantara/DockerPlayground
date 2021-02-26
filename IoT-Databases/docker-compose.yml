@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: mea-businessdb
+    build: ./business-db
+    restart: always
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin@pg@2021
+      POSTGRES_DB: postgres
+      POSTGRES_HOST: postgres
+    volumes:
+      - ./business-db/data:/var/lib/postgresql/data
+    networks:
+      iotvnet:
+        ipv4_address: 10.0.0.2
+  
+  influxdb:
+    image: influxdb:latest
+    container_name: mea-timeseriesdb
+    restart: always
+    ports:
+      - 8086:8086
+    environment: 
+      INFLUXDB_DB: timeseriesdb
+      INFLUXDB_ADMIN_USER: admin
+      INFLUXDB_ADMIN_PASSWORD: admin
+    volumes:
+      - ./timeseries-db/data:/var/lib/influxdb
+    networks:
+      iotvnet:
+        ipv4_address: 10.0.0.3
+
+  telegraf:
+    image: telegraf
+    container_name: mea-telegraf
+    restart: always
+    environment:
+      HOST_PROC: /rootfs/proc
+      HOST_SYS: /rootfs/sys
+      HOST_ETC: /rootfs/etc
+    volumes:
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:rw
+      - ./telegraf/docker.sock:/var/run/docker.sock
+      - ./telegraf/var:/var
+    networks:
+      iotvnet:
+        ipv4_address: 10.0.0.4
+  chronograf:
+    image: chronograf
+    container_name: mea-chronograf
+    restart: always
+    ports:
+      - 8888:8888
+    volumes:
+      - ./chronograf:/var/lib/chronograf
+    networks:
+      iotvnet:
+        ipv4_address: 10.0.0.5
+  kapacitor:
+    image: kapacitor
+    container_name: mea-capacitor
+    restart: always
+    ports:
+      - 9092:9092
+    volumes:
+      - ./kapacitor:/var/lib/kapacitor
+    networks:
+      iotvnet:
+        ipv4_address: 10.0.0.6
+
+networks:
+  iotvnet:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.0.0.0/16
+         gateway: 10.0.0.1
