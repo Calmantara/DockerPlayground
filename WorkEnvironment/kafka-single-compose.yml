@@ -1,0 +1,62 @@
+version: "3.9"
+
+services:
+  # Kafka Setup
+  zoo1:
+    image: zookeeper
+    container_name: zoo1
+    restart: always
+    hostname: zoo1
+    ports:
+      - 2181:2181
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_TICK_TIME: 2000
+      ZOO_INIT_LIMIT: 5
+      ZOO_SYNC_LIMIT: 2
+    networks:
+      mcpiddev:
+        ipv4_address: 10.0.0.7
+
+  kafka1:
+    image: confluentinc/cp-kafka
+    hostname: kafka1
+    ports:
+      - "9091:9091"
+    restart: always
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka1:19091,LISTENER_DOCKER_EXTERNAL://localhost:9091
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+      KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181"
+      KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    volumes:
+      - ./kafka/kafka1/data:/var/lib/kafka/data
+    depends_on:
+      - zoo1
+    networks:
+      mcpiddev:
+        ipv4_address: 10.0.0.8
+
+  kafka_manager:
+    image: hlebalbau/kafka-manager:stable
+    ports:
+      - "9000:9000"
+    environment:
+      ZK_HOSTS: "zoo1:2181"
+      APPLICATION_SECRET: "random-secret"
+      KAFKA_MANAGER_AUTH_ENABLED: "true"
+      KAFKA_MANAGER_USERNAME: mcpid_dev
+      KAFKA_MANAGER_PASSWORD: mcpiddev
+    networks:
+      mcpiddev:
+        ipv4_address: 10.0.0.11
+
+networks:
+  mcpiddev:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.0/16
+          gateway: 10.0.0.1

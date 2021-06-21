@@ -1,3 +1,9 @@
-/mongo/data/*
-/postgres/data/*
-/.vscode
+mongo/data/*
+postgres/data/*
+kafka/kafka1/data/*
+kafka/kafka2/data/*
+kafka/kafka3/data/*
+elasticsearch/es01/*
+elasticsearch/es02/*
+elasticsearch/es03/*
+.vscode
