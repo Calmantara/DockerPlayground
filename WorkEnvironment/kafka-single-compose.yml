@@ -43,6 +43,7 @@ services:
     image: hlebalbau/kafka-manager:stable
     ports:
       - "9000:9000"
+    restart: always
     environment:
       ZK_HOSTS: "zoo1:2181"
       APPLICATION_SECRET: "random-secret"
