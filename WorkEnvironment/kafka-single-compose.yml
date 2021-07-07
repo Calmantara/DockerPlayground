@@ -15,17 +15,17 @@ services:
       ZOO_INIT_LIMIT: 5
       ZOO_SYNC_LIMIT: 2
     networks:
-      mcpiddev:
-        ipv4_address: 10.0.0.7
+      workenv_vnet:
+        ipv4_address: 10.10.0.7
 
   kafka1:
     image: confluentinc/cp-kafka
     hostname: kafka1
     ports:
-      - "9091:9091"
+      - "9092:9092"
     restart: always
     environment:
-      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka1:19091,LISTENER_DOCKER_EXTERNAL://localhost:9091
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka1:19091,LISTENER_DOCKER_EXTERNAL://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
       KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181"
@@ -36,8 +36,8 @@ services:
     depends_on:
       - zoo1
     networks:
-      mcpiddev:
-        ipv4_address: 10.0.0.8
+      workenv_vnet:
+        ipv4_address: 10.10.0.8
 
   kafka_manager:
     image: hlebalbau/kafka-manager:stable
@@ -48,16 +48,16 @@ services:
       ZK_HOSTS: "zoo1:2181"
       APPLICATION_SECRET: "random-secret"
       KAFKA_MANAGER_AUTH_ENABLED: "true"
-      KAFKA_MANAGER_USERNAME: mcpid_dev
-      KAFKA_MANAGER_PASSWORD: mcpiddev
+      KAFKA_MANAGER_USERNAME: admin
+      KAFKA_MANAGER_PASSWORD: admin
     networks:
-      mcpiddev:
-        ipv4_address: 10.0.0.11
+      workenv_vnet:
+        ipv4_address: 10.10.0.11
 
 networks:
-  mcpiddev:
+  workenv_vnet:
     driver: bridge
     ipam:
       config:
-        - subnet: 10.0.0.0/16
-          gateway: 10.0.0.1
+        - subnet: 10.10.0.0/16
+          gateway: 10.10.0.1

@@ -16,8 +16,8 @@ services:
       ZOO_INIT_LIMIT: 5
       ZOO_SYNC_LIMIT: 2
     networks:
-      mcpiddev:
-        ipv4_address: 10.0.0.5
+      workenv_vnet:
+        ipv4_address: 10.10.0.5
 
   zoo2:
     image: zookeeper
@@ -33,8 +33,8 @@ services:
       ZOO_INIT_LIMIT: 5
       ZOO_SYNC_LIMIT: 2
     networks:
-      mcpiddev:
-        ipv4_address: 10.0.0.6
+      workenv_vnet:
+        ipv4_address: 10.10.0.6
 
   zoo3:
     image: zookeeper
@@ -50,8 +50,8 @@ services:
       ZOO_INIT_LIMIT: 5
       ZOO_SYNC_LIMIT: 2
     networks:
-      mcpiddev:
-        ipv4_address: 10.0.0.7
+      workenv_vnet:
+        ipv4_address: 10.10.0.7
 
   kafka1:
     image: confluentinc/cp-kafka
@@ -73,8 +73,8 @@ services:
       - zoo2
       - zoo3
     networks:
-      mcpiddev:
-        ipv4_address: 10.0.0.8
+      workenv_vnet:
+        ipv4_address: 10.10.0.8
 
   kafka2:
     image: confluentinc/cp-kafka
@@ -96,8 +96,8 @@ services:
       - zoo2
       - zoo3
     networks:
-      mcpiddev:
-        ipv4_address: 10.0.0.9
+      workenv_vnet:
+        ipv4_address: 10.10.0.9
 
   kafka3:
     image: confluentinc/cp-kafka
@@ -119,12 +119,11 @@ services:
       - zoo2
       - zoo3
     networks:
-      mcpiddev:
-        ipv4_address: 10.0.0.10
+      workenv_vnet:
+        ipv4_address: 10.10.0.10
 
   kafka_manager:
     image: hlebalbau/kafka-manager:stable
-    restart: always
     ports:
       - "9000:9000"
     restart: always
@@ -132,16 +131,16 @@ services:
       ZK_HOSTS: "zoo1:2181,zoo2:2181,zoo3:2181"
       APPLICATION_SECRET: "random-secret"
       KAFKA_MANAGER_AUTH_ENABLED: "true"
-      KAFKA_MANAGER_USERNAME: mcpid_dev
-      KAFKA_MANAGER_PASSWORD: mcpiddev
+      KAFKA_MANAGER_USERNAME: admin
+      KAFKA_MANAGER_PASSWORD: admin
     networks:
-      mcpiddev:
-        ipv4_address: 10.0.0.11
+      workenv_vnet:
+        ipv4_address: 10.10.0.11
 
 networks:
-  mcpiddev:
+  workenv_vnet:
     driver: bridge
     ipam:
       config:
-        - subnet: 10.0.0.0/16
-          gateway: 10.0.0.1
+        - subnet: 10.10.0.0/16
+          gateway: 10.10.0.1

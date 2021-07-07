@@ -7,3 +7,4 @@ elasticsearch/es01/*
 elasticsearch/es02/*
 elasticsearch/es03/*
 .vscode
+.DS_Store
